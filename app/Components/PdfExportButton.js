@@ -41,20 +41,22 @@ const PdfExportButton = ({ data, formattedDate, currencySymbol = '$' }) => {
 
             // ── Header bar ──────────────────────────────────────────────
             const headerH = 48;
-            pdf.setFillColor(124, 58, 237); // primary #7c3aed
+            pdf.setFillColor(30, 45, 33); // Dark Green #1e2d21
             pdf.rect(0, 0, pageWidth, headerH, 'F');
 
             // Logo image (left side, vertically centered)
             try {
-                const res = await fetch('/krest-logo.png');
+                const logoUrl = 'https://fwlquslzwqlklvrjzopa.supabase.co/storage/v1/object/public/krest-storage/log.png';
+                const res = await fetch(logoUrl);
                 const blob = await res.blob();
                 const dataUrl = await new Promise((resolve) => {
                     const reader = new FileReader();
                     reader.onload = () => resolve(reader.result);
                     reader.readAsDataURL(blob);
                 });
-                pdf.addImage(dataUrl, 'PNG', margin, 8, 42, 16);
-            } catch {
+                pdf.addImage(dataUrl, 'PNG', margin, 12, 45, 12.5);
+            } catch (err) {
+                console.error('Logo load failed:', err);
                 pdf.setTextColor(255, 255, 255);
                 pdf.setFontSize(14);
                 pdf.setFont('helvetica', 'bold');
@@ -76,12 +78,13 @@ const PdfExportButton = ({ data, formattedDate, currencySymbol = '$' }) => {
                 const barcodeDataUrl = generateBarcodeDataUrl(trackingNum);
                 pdf.setFillColor(255, 255, 255);
                 pdf.rect(0, headerH - 18, pageWidth, 18, 'F');
-                // 20% narrower than before (88mm wide), centered
                 const barcodeW = 88;
                 pdf.addImage(barcodeDataUrl, 'PNG', pageWidth / 2 - barcodeW / 2, headerH - 17, barcodeW, 16);
-            } catch (e) {
-                // barcode generation failed silently
-            }
+                
+                // Yellow accent under barcode
+                pdf.setFillColor(248, 204, 116); // Yellow #f8cc74
+                pdf.rect(0, headerH - 0.5, pageWidth, 0.5, 'F');
+            } catch (e) {}
 
             y = headerH + 8;
 
@@ -103,7 +106,7 @@ const PdfExportButton = ({ data, formattedDate, currencySymbol = '$' }) => {
             pdf.setFontSize(7);
             pdf.setFont('helvetica', 'bold');
             pdf.text('STATUS', pageWidth - margin - 55, y + 7);
-            pdf.setTextColor(37, 99, 235); // blue-600
+            pdf.setTextColor(30, 45, 33); // Dark Green
             pdf.setFontSize(12);
             pdf.setFont('helvetica', 'bold');
             pdf.text(statusText, pageWidth - margin - 55, y + 16);
@@ -112,14 +115,17 @@ const PdfExportButton = ({ data, formattedDate, currencySymbol = '$' }) => {
 
             // ── Section helper ───────────────────────────────────────────
             const sectionHeader = (title) => {
-                pdf.setDrawColor(226, 232, 240);
-                pdf.setLineWidth(0.3);
-                pdf.line(margin, y, margin + contentWidth, y);
-                pdf.setTextColor(124, 58, 237); // primary #7c3aed
-                pdf.setFontSize(8);
+                pdf.setFillColor(30, 45, 33);
+                pdf.rect(margin, y, 2, 6, 'F'); // Little green marker
+                pdf.setTextColor(30, 45, 33); // Dark Green
+                pdf.setFontSize(8.5);
                 pdf.setFont('helvetica', 'bold');
-                pdf.text(title, margin, y + 6);
-                y += 10;
+                pdf.text(title, margin + 5, y + 5);
+                
+                pdf.setDrawColor(226, 232, 240);
+                pdf.setLineWidth(0.2);
+                pdf.line(margin, y + 8, margin + contentWidth, y + 8);
+                y += 15;
             };
 
 
@@ -139,42 +145,42 @@ const PdfExportButton = ({ data, formattedDate, currencySymbol = '$' }) => {
                 data.destination_country,
             ].filter(Boolean).join(', ');
 
-            const colW = contentWidth / 2 - 3;
+            const colW = contentWidth / 2 - 4;
 
             // Origin box
-            pdf.setFillColor(239, 246, 255); // blue-50
+            pdf.setFillColor(254, 253, 247); // Very light yellow-gray
             pdf.roundedRect(margin, y, colW, 32, 2, 2, 'F');
-            pdf.setTextColor(37, 99, 235);
+            pdf.setTextColor(30, 45, 33); // Dark Green
             pdf.setFontSize(7.5);
             pdf.setFont('helvetica', 'bold');
             pdf.text('ORIGIN', margin + 4, y + 6);
             pdf.setTextColor(15, 23, 42);
-            pdf.setFontSize(8);
+            pdf.setFontSize(8.5);
             pdf.setFont('helvetica', 'normal');
             const originLines = pdf.splitTextToSize(originAddr, colW - 8);
-            pdf.text(originLines, margin + 4, y + 12);
+            pdf.text(originLines, margin + 4, y + 13);
             pdf.setTextColor(100, 116, 139);
             pdf.setFontSize(7.5);
-            pdf.text(`Dep: ${data.depaturedate || 'N/A'}  ${data.depaturetime || ''}`, margin + 4, y + 26);
+            pdf.text(`Dep: ${data.depaturedate || 'N/A'}  ${data.depaturetime || ''}`, margin + 4, y + 27);
 
             // Destination box
-            const dx = margin + colW + 6;
-            pdf.setFillColor(239, 246, 255);
+            const dx = margin + colW + 8;
+            pdf.setFillColor(254, 253, 247); // Very light yellow-gray
             pdf.roundedRect(dx, y, colW, 32, 2, 2, 'F');
-            pdf.setTextColor(37, 99, 235);
+            pdf.setTextColor(30, 45, 33);
             pdf.setFontSize(7.5);
             pdf.setFont('helvetica', 'bold');
             pdf.text('DESTINATION', dx + 4, y + 6);
             pdf.setTextColor(15, 23, 42);
-            pdf.setFontSize(8);
+            pdf.setFontSize(8.5);
             pdf.setFont('helvetica', 'normal');
             const destLines = pdf.splitTextToSize(destAddr, colW - 8);
-            pdf.text(destLines, dx + 4, y + 12);
+            pdf.text(destLines, dx + 4, y + 13);
             pdf.setTextColor(100, 116, 139);
             pdf.setFontSize(7.5);
-            pdf.text(`ETA: ${data.pickupdate || 'N/A'}  ${data.pickuptime || ''}`, dx + 4, y + 26);
+            pdf.text(`ETA: ${data.pickupdate || 'N/A'}  ${data.pickuptime || ''}`, dx + 4, y + 27);
 
-            y += 40;
+            y += 42;
 
             // ── Parties ──────────────────────────────────────────────────
             sectionHeader('PARTIES');
@@ -187,12 +193,13 @@ const PdfExportButton = ({ data, formattedDate, currencySymbol = '$' }) => {
             pdf.text('SHIPPER', margin, y);
             y += 5;
             pdf.setTextColor(15, 23, 42);
-            pdf.setFontSize(8.5);
+            pdf.setFontSize(9);
+            pdf.setFont('helvetica', 'bold');
             pdf.text(data.shipper?.name || 'N/A', margin, y); y += 5;
-            pdf.setFontSize(8); pdf.setFont('helvetica', 'normal');
+            pdf.setFontSize(8.5); pdf.setFont('helvetica', 'normal');
             pdf.setTextColor(100, 116, 139);
-            pdf.text(data.shipper?.email || '', margin, y); y += 4;
-            pdf.text(data.shipper?.phone_number || '', margin, y); y += 4;
+            pdf.text(data.shipper?.email || '', margin, y); y += 4.5;
+            pdf.text(data.shipper?.phone_number || '', margin, y); y += 4.5;
             const shipperAddrLines = pdf.splitTextToSize(data.shipper?.address || '', colW - 4);
             pdf.text(shipperAddrLines, margin, y);
 
@@ -203,16 +210,17 @@ const PdfExportButton = ({ data, formattedDate, currencySymbol = '$' }) => {
             pdf.setFont('helvetica', 'bold');
             pdf.text('RECEIVER', dx, ry); ry += 5;
             pdf.setTextColor(15, 23, 42);
-            pdf.setFontSize(8.5);
+            pdf.setFontSize(9);
+            pdf.setFont('helvetica', 'bold');
             pdf.text(data.receiver?.name || 'N/A', dx, ry); ry += 5;
-            pdf.setFontSize(8); pdf.setFont('helvetica', 'normal');
+            pdf.setFontSize(8.5); pdf.setFont('helvetica', 'normal');
             pdf.setTextColor(100, 116, 139);
-            pdf.text(data.receiver?.email || '', dx, ry); ry += 4;
-            pdf.text(data.receiver?.phone_number || '', dx, ry); ry += 4;
+            pdf.text(data.receiver?.email || '', dx, ry); ry += 4.5;
+            pdf.text(data.receiver?.phone_number || '', dx, ry); ry += 4.5;
             const recvAddrLines = pdf.splitTextToSize(data.receiver?.address || '', colW - 4);
             pdf.text(recvAddrLines, dx, ry);
 
-            y = Math.max(y + shipperAddrLines.length * 4, ry + recvAddrLines.length * 4) + 10;
+            y = Math.max(y + shipperAddrLines.length * 4.5, ry + recvAddrLines.length * 4.5) + 12;
 
             // ── Freight Details ──────────────────────────────────────────
             sectionHeader('FREIGHT DETAILS');
@@ -246,7 +254,7 @@ const PdfExportButton = ({ data, formattedDate, currencySymbol = '$' }) => {
                 pdf.setFont('helvetica', 'normal');
                 pdf.text(label, xPos, y);
                 pdf.setTextColor(15, 23, 42);
-                pdf.setFontSize(8.5);
+                pdf.setFontSize(9);
                 pdf.setFont('helvetica', 'bold');
                 pdf.text(String(value || 'N/A'), xPos, y + 5);
             });

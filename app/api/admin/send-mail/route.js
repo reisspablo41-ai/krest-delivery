@@ -32,7 +32,7 @@ export async function POST(req) {
                     <table cellpadding="0" cellspacing="0" border="0">
                       <tr>
                         <td style="background-color:#1e2d21;border-radius:10px;">
-                          <a href="https://hussgrouptransportcourier.com" target="_blank" style="display:inline-block;padding:18px 40px;font-size:16px;font-weight:700;color:#ffffff;text-decoration:none;letter-spacing:0.5px;">Visit Our Website &rarr;</a>
+                          <a href="https://krestdelivery.com" target="_blank" style="display:inline-block;padding:18px 40px;font-size:16px;font-weight:700;color:#ffffff;text-decoration:none;letter-spacing:0.5px;">Visit Our Website &rarr;</a>
                         </td>
                       </tr>
                     </table>

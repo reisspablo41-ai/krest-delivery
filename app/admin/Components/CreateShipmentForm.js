@@ -56,6 +56,7 @@ function CreateShipmentForm({
   const [selectedImage, setSelectedImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [contentType, setContentType] = useState(1);
 
 
 

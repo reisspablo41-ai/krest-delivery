@@ -7,21 +7,23 @@ import useScrollPosition from '../Hooks/scrollPostionDetection';
 import { usePathname } from 'next/navigation';
 import MainMenu from './MainMenu';
 import useWindowWidth from './Functions/getBrowserWidth';
-import { useUserContext } from '../Context/UserContext';
-import { ShoppingCart, Menu, X, ChevronDown } from 'lucide-react';
+import { Menu, X, ChevronDown } from 'lucide-react';
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 
 function Header() {
   const pathname = usePathname();
   const scrollPosition = useScrollPosition(100);
   const width = useWindowWidth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { setActiveMenu, activeMenu } = useUserContext();
+  const [openSection, setOpenSection] = useState(null);
+
+  function toggleSection(id) {
+    setOpenSection(prev => prev === id ? null : id);
+  }
 
   const navItems = [
-    { 
-      id: 1, 
+    {
+      id: 1,
       label: 'QUICK TOOLS',
       subItems: [
         { label: 'Track Package', href: '/Track' },
@@ -32,8 +34,8 @@ function Header() {
         { label: 'Calculate A Price', href: '/' },
       ]
     },
-    { 
-      id: 2, 
+    {
+      id: 2,
       label: 'SEND',
       subItems: [
         { label: 'Sending Mail', href: '/ship/sending-mail' },
@@ -44,8 +46,8 @@ function Header() {
         { label: 'Postage Prices', href: '/buisness/postage-prices' },
       ]
     },
-    { 
-      id: 3, 
+    {
+      id: 3,
       label: 'RECEIVE',
       subItems: [
         { label: 'Track Package', href: '/Track' },
@@ -56,8 +58,8 @@ function Header() {
         { label: 'Redirecting a Package', href: '/dashboard/informed-delivery' },
       ]
     },
-    { 
-      id: 4, 
+    {
+      id: 4,
       label: 'HELP',
       subItems: [
         { label: 'Faqs', href: '/Faqs' },
@@ -74,14 +76,14 @@ function Header() {
       <div className={`fixed top-0 w-full z-[9999] transition-all duration-300 ${scrollPosition ? 'py-2 md:py-4' : 'py-4 md:py-8'}`}>
         <div className="max-w-7xl mx-auto px-4 md:px-6">
           <div className={`flex items-center justify-between px-4 md:px-8 py-2 md:py-4 transition-all duration-300 ${
-            scrollPosition || pathname !== '/' 
-              ? 'bg-white/95 backdrop-blur-xl shadow-card' 
+            scrollPosition || pathname !== '/'
+              ? 'bg-white/95 backdrop-blur-xl shadow-card'
               : 'bg-white/95 backdrop-blur-xl shadow-2xl'
           } rounded-2xl md:rounded-[2.5rem]`}>
             <div className="flex items-center gap-4">
               <div className="md:hidden">
                 <button
-                  onClick={() => setIsMenuOpen(!isMenuOpen)}
+                  onClick={() => { setIsMenuOpen(!isMenuOpen); setOpenSection(null); }}
                   className="p-2 text-primary hover:bg-gray-100 rounded-xl transition-colors"
                 >
                   {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -103,74 +105,55 @@ function Header() {
                 </Link>
               </div>
             </div>
-            
+
             <div className="hidden md:flex flex-1 justify-center">
               <MainMenu />
             </div>
-            
+
             <div className="flex items-center gap-3 md:gap-6">
               <UserDetails />
             </div>
           </div>
-          
+
           {/* Mobile Dropdown Menu */}
-          <AnimatePresence>
-            {isMenuOpen && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.3, ease: 'easeInOut' }}
-                className="md:hidden mt-2 bg-white shadow-2xl rounded-2xl border border-gray-100 overflow-hidden"
-              >
-                <div className="py-2">
-                  {navItems.map((item) => (
-                    <div key={item.id} className="border-b border-gray-50 last:border-none">
-                      <button
-                        className={`w-full px-6 py-4 flex items-center justify-between transition-colors ${
-                          activeMenu === item.id ? 'bg-primary/5 text-primary' : 'text-primary/70'
-                        }`}
-                        onClick={() => setActiveMenu(activeMenu === item.id ? null : item.id)}
-                      >
-                        <span className="text-xs font-black tracking-widest">{item.label}</span>
-                        <motion.div
-                          animate={{ rotate: activeMenu === item.id ? 180 : 0 }}
-                          transition={{ duration: 0.2 }}
-                        >
-                          <ChevronDown size={14} className={activeMenu === item.id ? 'text-primary' : 'text-gray-400'} />
-                        </motion.div>
-                      </button>
-                      
-                      <AnimatePresence>
-                        {activeMenu === item.id && (
-                          <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: 'auto', opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            className="overflow-hidden bg-gray-50/50"
+          {isMenuOpen && (
+            <div className="md:hidden mt-2 bg-white shadow-2xl rounded-2xl border border-gray-100">
+              <div className="py-2">
+                {navItems.map((item) => (
+                  <div key={item.id} className="border-b border-gray-50 last:border-none">
+                    <button
+                      className={`w-full px-6 py-4 flex items-center justify-between ${
+                        openSection === item.id ? 'bg-primary/5 text-primary' : 'text-primary/70'
+                      }`}
+                      onClick={() => toggleSection(item.id)}
+                    >
+                      <span className="text-xs font-black tracking-widest">{item.label}</span>
+                      <ChevronDown
+                        size={14}
+                        className={`transition-transform duration-200 ${openSection === item.id ? 'rotate-180 text-primary' : 'text-gray-400'}`}
+                      />
+                    </button>
+
+                    {openSection === item.id && (
+                      <div className="bg-gray-50/50 px-8 py-2 pb-4 grid grid-cols-1 gap-1">
+                        {item.subItems.map((subItem, idx) => (
+                          <Link
+                            key={idx}
+                            href={subItem.href}
+                            className="py-2.5 text-[11px] font-bold text-gray-500 hover:text-primary transition-colors flex items-center gap-2"
+                            onClick={() => { setIsMenuOpen(false); setOpenSection(null); }}
                           >
-                            <div className="px-8 py-2 pb-4 grid grid-cols-1 gap-1">
-                              {item.subItems.map((subItem, idx) => (
-                                <Link
-                                  key={idx}
-                                  href={subItem.href}
-                                  className="py-2.5 text-[11px] font-bold text-gray-500 hover:text-primary transition-colors flex items-center gap-2"
-                                  onClick={() => setIsMenuOpen(false)}
-                                >
-                                  <div className="w-1 h-1 rounded-full bg-gray-300"></div>
-                                  {subItem.label}
-                                </Link>
-                              ))}
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+                            <div className="w-1 h-1 rounded-full bg-gray-300"></div>
+                            {subItem.label}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </>
