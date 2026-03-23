@@ -7,7 +7,6 @@ import useScrollPosition from '../Hooks/scrollPostionDetection';
 import { usePathname } from 'next/navigation';
 import MainMenu from './MainMenu';
 import useWindowWidth from './Functions/getBrowserWidth';
-import MobileHeader from './MobileHeader';
 import { useUserContext } from '../Context/UserContext';
 import { ShoppingCart, Menu, X, ChevronDown } from 'lucide-react';
 import { useState } from 'react';
@@ -21,10 +20,52 @@ function Header() {
   const { setActiveMenu, activeMenu } = useUserContext();
 
   const navItems = [
-    { id: 1, label: 'QUICK TOOLS' },
-    { id: 2, label: 'SEND' },
-    { id: 3, label: 'RECEIVE' },
-    { id: 4, label: 'HELP' },
+    { 
+      id: 1, 
+      label: 'QUICK TOOLS',
+      subItems: [
+        { label: 'Track Package', href: '/Track' },
+        { label: 'Informed Delivery', href: '/dashboard/informed-delivery' },
+        { label: 'Buy Stamps', href: '/krest-deliverystore/buy-stamps' },
+        { label: 'Schedule A Pickup', href: '/schedule-a-pickup' },
+        { label: 'Change My Address', href: '/dashboard/informed-delivery' },
+        { label: 'Calculate A Price', href: '/' },
+      ]
+    },
+    { 
+      id: 2, 
+      label: 'SEND',
+      subItems: [
+        { label: 'Sending Mail', href: '/ship/sending-mail' },
+        { label: 'Sending Package', href: '/ship/sending-package' },
+        { label: 'Shipping Restrictions', href: '#' },
+        { label: 'Filing A Claim', href: '/ContactUs/FileClaim' },
+        { label: 'Requesting a Refund', href: '/ContactUs/RequestRefund' },
+        { label: 'Postage Prices', href: '/buisness/postage-prices' },
+      ]
+    },
+    { 
+      id: 3, 
+      label: 'RECEIVE',
+      subItems: [
+        { label: 'Track Package', href: '/Track' },
+        { label: 'Hold Mail', href: '/dashboard/informed-delivery' },
+        { label: 'Change of Address', href: '/dashboard/informed-delivery' },
+        { label: 'Managing Mail', href: '#' },
+        { label: 'Mail for Deceased', href: '/receive/mail-for-deceased' },
+        { label: 'Redirecting a Package', href: '/dashboard/informed-delivery' },
+      ]
+    },
+    { 
+      id: 4, 
+      label: 'HELP',
+      subItems: [
+        { label: 'Faqs', href: '/Faqs' },
+        { label: 'Requesting a Refund', href: '/ContactUs/RequestRefund' },
+        { label: 'Filing A Claim', href: '/ContactUs/FileClaim' },
+        { label: 'Customer Testimonials', href: '/testimonials' },
+      ]
+    },
   ];
 
   return (
@@ -71,7 +112,7 @@ function Header() {
               <UserDetails />
             </div>
           </div>
-
+          
           {/* Mobile Dropdown Menu */}
           <AnimatePresence>
             {isMenuOpen && (
@@ -80,30 +121,53 @@ function Header() {
                 animate={{ height: 'auto', opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
                 transition={{ duration: 0.3, ease: 'easeInOut' }}
-                className="md:hidden mt-2 bg-white/95 backdrop-blur-xl rounded-2xl border border-gray-100 shadow-2xl overflow-hidden"
+                className="md:hidden mt-2 bg-white shadow-2xl rounded-2xl border border-gray-100 overflow-hidden"
               >
-                <ul className="py-4 px-2">
+                <div className="py-2">
                   {navItems.map((item) => (
-                    <li
-                      key={item.id}
-                      className="px-6 py-4 text-xs font-bold tracking-widest text-primary/70 hover:text-primary hover:bg-gray-50 rounded-xl transition-all cursor-pointer flex items-center justify-between group"
-                      onClick={() => {
-                        setActiveMenu(activeMenu === item.id ? null : item.id);
-                      }}
-                    >
-                      {item.label}
-                      <motion.div
-                        animate={{ rotate: activeMenu === item.id ? 180 : 0 }}
-                        className="text-gray-400 group-hover:text-primary"
+                    <div key={item.id} className="border-b border-gray-50 last:border-none">
+                      <button
+                        className={`w-full px-6 py-4 flex items-center justify-between transition-colors ${
+                          activeMenu === item.id ? 'bg-primary/5 text-primary' : 'text-primary/70'
+                        }`}
+                        onClick={() => setActiveMenu(activeMenu === item.id ? null : item.id)}
                       >
-                        <ChevronDown size={16} />
-                      </motion.div>
-                    </li>
+                        <span className="text-xs font-black tracking-widest">{item.label}</span>
+                        <motion.div
+                          animate={{ rotate: activeMenu === item.id ? 180 : 0 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <ChevronDown size={14} className={activeMenu === item.id ? 'text-primary' : 'text-gray-400'} />
+                        </motion.div>
+                      </button>
+                      
+                      <AnimatePresence>
+                        {activeMenu === item.id && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="overflow-hidden bg-gray-50/50"
+                          >
+                            <div className="px-8 py-2 pb-4 grid grid-cols-1 gap-1">
+                              {item.subItems.map((subItem, idx) => (
+                                <Link
+                                  key={idx}
+                                  href={subItem.href}
+                                  className="py-2.5 text-[11px] font-bold text-gray-500 hover:text-primary transition-colors flex items-center gap-2"
+                                  onClick={() => setIsMenuOpen(false)}
+                                >
+                                  <div className="w-1 h-1 rounded-full bg-gray-300"></div>
+                                  {subItem.label}
+                                </Link>
+                              ))}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
                   ))}
-                  <div className="mt-4 px-6 pt-4 border-t border-gray-100">
-                    {/* Additional mobile links or buttons if needed */}
-                  </div>
-                </ul>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>
