@@ -18,6 +18,7 @@ function EditStatusForm({
   statuses,
 }) {
   const [successMessage, setSuccessMessage] = useState('');
+  const [errMessage, setErrMessage] = useState('');
   const [selectedImage, setSelectedImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -141,7 +142,6 @@ function EditStatusForm({
   // Separate handlers for select fields (updating the value as the user selects)
 
   const handlePackageStatusUpdate = (e) => {
-    setPackageStatus(e.target.value);
     handleInputChange(e);
   };
 

@@ -92,7 +92,7 @@ function Header() {
               <div className="flex-shrink-0">
                 <Link href="/">
                   <div className="flex items-center gap-1.5 md:gap-2">
-                    <div className="relative w-28 h-10 md:w-36 md:h-12 transition-all duration-300">
+                    <div className="relative w-20 h-7 md:w-28 md:h-9 transition-all duration-300">
                       <Image
                         src="/logo.png"
                         alt="Krest Logo"

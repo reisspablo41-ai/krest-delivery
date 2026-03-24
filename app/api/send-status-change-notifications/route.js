@@ -23,8 +23,8 @@ export async function POST(req) {
       return new Response(JSON.stringify({ success: true, skipped: true }), { status: 200 });
     }
 
-    const logoUrl = 'https://qmkoxktojvjqokgxzqxw.supabase.co/storage/v1/object/public/krest-delivery/krest-logo.png';
-    const trackUrl = `https://hussgrouptransportcourier.com/Track/${shipmentData.trackingNumber}`;
+    const logoUrl = 'https://fwlquslzwqlklvrjzopa.supabase.co/storage/v1/object/public/krest-storage/log.png';
+    const trackUrl = `https://krestdelivery.com/Track/${shipmentData.trackingNumber}`;
     const status = shipmentData.status_id.status;
 
     // Pick accent colour based on status
@@ -50,17 +50,17 @@ export async function POST(req) {
 
         <!-- Header -->
         <tr>
-          <td style="background-color:#0f172a;border-radius:16px 16px 0 0;padding:36px 40px;text-align:center;">
-            <img src="${logoUrl}" alt="Krest Delivery" style="height:44px;display:inline-block;" />
-            <p style="color:#94a3b8;font-size:13px;margin:12px 0 0;">Global Shipping &amp; Logistics</p>
+          <td style="background-color:#1e2d21;border-radius:16px 16px 0 0;padding:36px 40px;text-align:center;">
+            <img src="${logoUrl}" alt="Krest Delivery" width="160" height="42" style="display:block;margin:0 auto;width:160px;max-height:42px;border:0;" />
+            <p style="color:#a0b0a4;font-size:13px;margin:12px 0 0;">Global Shipping &amp; Logistics</p>
           </td>
         </tr>
 
         <!-- Hero band -->
         <tr>
-          <td style="background-color:#1e293b;padding:24px 40px;text-align:center;border-bottom:3px solid ${accentColor};">
-            <p style="color:#94a3b8;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 6px;">Shipment Update</p>
-            <p style="color:#f1f5f9;font-size:22px;font-weight:800;margin:0;letter-spacing:1px;">${shipmentData.trackingNumber}</p>
+          <td style="background-color:#f8cc74;padding:24px 40px;text-align:center;border-bottom:3px solid ${accentColor};">
+            <p style="color:#1e2d21;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 6px;">Shipment Update</p>
+            <p style="color:#1e2d21;font-size:22px;font-weight:800;margin:0;letter-spacing:1px;">${shipmentData.trackingNumber}</p>
           </td>
         </tr>
 
@@ -145,7 +145,7 @@ export async function POST(req) {
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr>
                 <td align="center">
-                  <a href="${trackUrl}" style="display:inline-block;background-color:#f59e0b;color:#0f172a;font-size:15px;font-weight:800;text-decoration:none;padding:14px 36px;border-radius:8px;letter-spacing:0.5px;">
+                  <a href="${trackUrl}" style="display:inline-block;background-color:#f8cc74;color:#1e2d21;font-size:15px;font-weight:800;text-decoration:none;padding:14px 36px;border-radius:8px;letter-spacing:0.5px;">
                     Track Your Shipment →
                   </a>
                 </td>
@@ -156,12 +156,12 @@ export async function POST(req) {
 
         <!-- Footer -->
         <tr>
-          <td style="background-color:#0f172a;border-radius:0 0 16px 16px;padding:28px 40px;text-align:center;">
-            <p style="color:#94a3b8;font-size:13px;margin:0 0 8px;">Need help? Reach our support team</p>
-            <a href="mailto:contact@hussgrouptransportcourier.com" style="color:#f59e0b;font-size:13px;font-weight:600;text-decoration:none;">contact@hussgrouptransportcourier.com</a>
-            <p style="color:#475569;font-size:12px;margin:16px 0 0;">
+          <td style="background-color:#1e2d21;border-radius:0 0 16px 16px;padding:28px 40px;text-align:center;">
+            <p style="color:#a0b0a4;font-size:13px;margin:0 0 8px;">Need help? Reach our support team</p>
+            <a href="mailto:support@krestdelivery.com" style="color:#f8cc74;font-size:13px;font-weight:600;text-decoration:none;">support@krestdelivery.com</a>
+            <p style="color:#5a7060;font-size:12px;margin:16px 0 0;">
               © ${new Date().getFullYear()} Krest Delivery ·
-              <a href="https://hussgrouptransportcourier.com" style="color:#64748b;text-decoration:none;">Krest Delivery</a>
+              <a href="https://krestdelivery.com" style="color:#5a7060;text-decoration:none;">krestdelivery.com</a>
             </p>
             <p style="color:#334155;font-size:11px;margin:8px 0 0;">You received this because your email is linked to shipment ${shipmentData.trackingNumber}.</p>
           </td>
@@ -176,7 +176,7 @@ export async function POST(req) {
     console.log(`[Email] Sending status change notification for tracking: ${shipmentData.trackingNumber} via Resend`);
 
     const { data, error } = await resend.emails.send({
-      from: 'No Reply <contact@hussgrouptransportcourier.com>',
+      from: 'Krest Delivery <support@krestdelivery.com>',
       to: [shipmentData.shipper.email, shipmentData.receiver.email],
       subject: `${statusIcon} Shipment Update — #${shipmentData.trackingNumber} is now ${status}`,
       html,
